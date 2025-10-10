@@ -2,22 +2,24 @@ import FeatureCard from "./feature-card";
 import { InfiniteMovingCards } from "@/components/ui/infinite-moving-cards";
 import { BlurFade } from "@/components/ui/blur-fade";
 import ScrollReveal from "@/components/ScrollReveal";
+import { CardBody, CardContainer, CardItem } from "@/components/ui/3d-card";
+import TiltedCard from "@/components/TiltedCard";
 
 export default function About() {
     const testimonials = [
         {
             quote: "S ThinkHome máme konečně partnera, který zvládá i noční incidenty. SLA drží do puntíku a pravidelné reporty nás vždy připraví na audit.",
-            name: "Lucie Vránová",
+            name: "Samuel Palubinský",
             title: "COO • FinPro účetnictví",
         },
         {
             quote: "Díky automatizovanému onboarding procesu máme připravené účty pro každého pracovníka během pár minut. Bezpečnost i dostupnost konečně odpovídá realitě na stavbách.",
-            name: "Roman Petr",
+            name: "Ondrej Janík",
             title: "Technický ředitel • StavInovace",
         },
         {
             quote: "ThinkHome dodal kompletní řešení chytré domácnosti, které funguje stabilně a je snadno spravovatelné. Oceňuji rychlé reakce na každou změnu i transparentní komunikaci.",
-            name: "Petr Malý",
+            name: "Erdinc Daskicky",
             title: "Majitel rezidenčního domu • Privátní klient",
         },
     ];
@@ -66,101 +68,40 @@ export default function About() {
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                     <BlurFade delay={0.3}>
-                        <FeatureCard title="Turn-key IT" description="Kompletní správa sítě, serverů i koncových stanic s 24/7 dohledem." />
+                        <CardContainer className="inter-var">
+                            <CardBody className="bg-card relative group/card hover:shadow-2xl border-border w-full h-auto rounded-xl p-6 border">
+                                <CardItem translateZ="50" className="text-xl font-bold">
+                                    Turn-key IT
+                                </CardItem>
+                                <CardItem as="p" translateZ="60" className="text-sm text-muted-foreground mt-3">
+                                    Kompletní správa sítě, serverů i koncových stanic s 24/7 dohledem.
+                                </CardItem>
+                            </CardBody>
+                        </CardContainer>
                     </BlurFade>
                     <BlurFade delay={0.4}>
-                        <FeatureCard title="Chytrá domácnost" description="Home Assistant, automatizace, kamerové systémy a vzdálená správa." />
+                        <CardContainer className="inter-var">
+                            <CardBody className="bg-card relative group/card hover:shadow-2xl border-border w-full h-auto rounded-xl p-6 border">
+                                <CardItem translateZ="50" className="text-xl font-bold">
+                                    Chytrá domácnost
+                                </CardItem>
+                                <CardItem as="p" translateZ="60" className="text-sm text-muted-foreground mt-3">
+                                    Home Assistant, automatizace, kamerové systémy a vzdálená správa.
+                                </CardItem>
+                            </CardBody>
+                        </CardContainer>
                     </BlurFade>
                     <BlurFade delay={0.5}>
-                        <FeatureCard title="Cloud & identita" description="Microsoft 365, Azure, Vercel a automatizované nasazení s Terraformem." />
-                    </BlurFade>
-                </div>
-            </div>
-
-            {/* Projects Section */}
-            <div className="max-w-6xl mx-auto px-8 space-y-8">
-                <div className="text-center space-y-4">
-                    <BlurFade delay={0.1}>
-                        <h2 className="text-4xl font-bold">Naše projekty</h2>
-                    </BlurFade>
-                    <BlurFade delay={0.2}>
-                        <p className="text-lg text-muted-foreground">Reálné výsledky, žádné demo. Od chytrých domácností po hybridní cloud. Každý projekt má jasná měřitelná čísla.</p>
-                    </BlurFade>
-                </div>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <BlurFade delay={0.3}>
-                        <div className="space-y-4 p-6 rounded-xl border border-border bg-card">
-                            <div className="space-y-2">
-                                <div className="text-sm text-muted-foreground">Vzdělávání</div>
-                                <h3 className="text-xl font-bold">Wi-Fi kampus pro střední školu</h3>
-                                <p className="text-sm text-muted-foreground">Komplexní redesign školního Wi-Fi kampusu s důrazem na bezpečnost a dohled.</p>
-                            </div>
-                            <div className="text-sm text-muted-foreground">Střední polytechnická škola</div>
-                            <div className="flex gap-2">
-                                <span className="text-xs px-2 py-1 rounded bg-primary/10 text-primary">networking</span>
-                                <span className="text-xs px-2 py-1 rounded bg-primary/10 text-primary">security</span>
-                            </div>
-                            <div className="grid grid-cols-2 gap-4 pt-2">
-                                <div>
-                                    <div className="text-2xl font-bold">12</div>
-                                    <div className="text-xs text-muted-foreground">budov pokrytých</div>
-                                </div>
-                                <div>
-                                    <div className="text-2xl font-bold">2</div>
-                                    <div className="text-xs text-muted-foreground">záložní linky</div>
-                                </div>
-                            </div>
-                        </div>
-                    </BlurFade>
-
-                    <BlurFade delay={0.4}>
-                        <div className="space-y-4 p-6 rounded-xl border border-border bg-card">
-                            <div className="space-y-2">
-                                <div className="text-sm text-muted-foreground">Finance</div>
-                                <h3 className="text-xl font-bold">Nonstop IT support pro SMB</h3>
-                                <p className="text-sm text-muted-foreground">Správa IT pro účetní firmu s důrazem na SLA a bezpečnost identit.</p>
-                            </div>
-                            <div className="text-sm text-muted-foreground">Středně velká účetní firma</div>
-                            <div className="flex gap-2">
-                                <span className="text-xs px-2 py-1 rounded bg-primary/10 text-primary">managed-services</span>
-                                <span className="text-xs px-2 py-1 rounded bg-primary/10 text-primary">security</span>
-                            </div>
-                            <div className="grid grid-cols-2 gap-4 pt-2">
-                                <div>
-                                    <div className="text-2xl font-bold">2 h</div>
-                                    <div className="text-xs text-muted-foreground">SLA reakce</div>
-                                </div>
-                                <div>
-                                    <div className="text-2xl font-bold">96%</div>
-                                    <div className="text-xs text-muted-foreground">vyřešené incidenty</div>
-                                </div>
-                            </div>
-                        </div>
-                    </BlurFade>
-
-                    <BlurFade delay={0.5}>
-                        <div className="space-y-4 p-6 rounded-xl border border-border bg-card">
-                            <div className="space-y-2">
-                                <div className="text-sm text-muted-foreground">Rezidenční</div>
-                                <h3 className="text-xl font-bold">Chytrá vila Brandýs</h3>
-                                <p className="text-sm text-muted-foreground">Kompletní integrace chytré domácnosti včetně bezpečnostních kamer a vzdálené správy.</p>
-                            </div>
-                            <div className="text-sm text-muted-foreground">Soukromý investor</div>
-                            <div className="flex gap-2">
-                                <span className="text-xs px-2 py-1 rounded bg-primary/10 text-primary">home-automation</span>
-                                <span className="text-xs px-2 py-1 rounded bg-primary/10 text-primary">networking</span>
-                            </div>
-                            <div className="grid grid-cols-2 gap-4 pt-2">
-                                <div>
-                                    <div className="text-2xl font-bold">2 h</div>
-                                    <div className="text-xs text-muted-foreground">reakční doba</div>
-                                </div>
-                                <div>
-                                    <div className="text-2xl font-bold">18%</div>
-                                    <div className="text-xs text-muted-foreground">úspora energie</div>
-                                </div>
-                            </div>
-                        </div>
+                        <CardContainer className="inter-var">
+                            <CardBody className="bg-card relative group/card hover:shadow-2xl border-border w-full h-auto rounded-xl p-6 border">
+                                <CardItem translateZ="50" className="text-xl font-bold">
+                                    Cloud & identita
+                                </CardItem>
+                                <CardItem as="p" translateZ="60" className="text-sm text-muted-foreground mt-3">
+                                    Microsoft 365, Azure, Vercel a automatizované nasazení s Terraformem.
+                                </CardItem>
+                            </CardBody>
+                        </CardContainer>
                     </BlurFade>
                 </div>
             </div>
