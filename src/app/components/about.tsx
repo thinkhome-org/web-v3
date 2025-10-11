@@ -26,36 +26,6 @@ export default function About() {
 
     return (
         <div className="space-y-24 pb-16">
-            {/* Value Propositions */}
-            <div className="max-w-6xl mx-auto px-8">
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                    <div className="space-y-3">
-                        <BlurFade>
-                            <h3 className="text-xl font-bold">Transparentní správa</h3>
-                        </BlurFade>
-                        <BlurFade>
-                            <p className="text-muted-foreground">Každý zásah logujeme a měsíc uzavíráme společným reportem.</p>
-                        </BlurFade>
-                    </div>
-                    <div className="space-y-3">
-                        <BlurFade>
-                            <h3 className="text-xl font-bold">Proaktivní monitoring</h3>
-                        </BlurFade>
-                        <BlurFade>
-                            <p className="text-muted-foreground">Incidenty řešíme dříve, než je pocítí uživatelé – od sítí po cloud.</p>
-                        </BlurFade>
-                    </div>
-                    <div className="space-y-3">
-                        <BlurFade>
-                            <h3 className="text-xl font-bold">Partnerství, ne vendor</h3>
-                        </BlurFade>
-                        <BlurFade>
-                            <p className="text-muted-foreground">Sdílíme roadmapu i doporučení, aby IT rostlo spolu s vámi.</p>
-                        </BlurFade>
-                    </div>
-                </div>
-            </div>
-
             {/* Services Section */}
             <div className="max-w-6xl mx-auto px-8 space-y-8">
                 <div className="text-center space-y-4">

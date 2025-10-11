@@ -52,13 +52,10 @@ export default function Home() {
                 </div>
 
                 {/* About section that overlaps */}
-                <section>
-                    <div className="relative bg-background rounded-t-[3rem] pt-20 pb-20 shadow-2xl min-h-screen">
-                        <About />
-                        <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-background via-background/80 to-transparent pointer-events-none" />
-                    </div>
-                    <GradualBlur target="parent" position="bottom" height="6rem" strength={2} divCount={5} curve="bezier" exponential={true} opacity={1} />
-                </section>
+                <div className="relative bg-background rounded-t-[3rem] pt-20 pb-20 shadow-2xl min-h-screen">
+                    <About />
+                </div>
+                <Footer />
             </div>
         </div>
     );

@@ -3,35 +3,24 @@ const underlineClass = "relative w-fit hover:text-white hover:transition hover:d
 
 export default function Footer() {
     return (
-        <footer className="bg-gray-900 text-white py-8">
-            <div className="container mx-auto px-4">
-                <div className="">
-                    <div>
-                        <h3 className="text-2xl font-bold mb-4">ThinkHome</h3>
-
-                        <div className="space-y-4">
-                            <Link href="/" className={underlineClass}>
-                                Domů
-                            </Link>
-                            <Link href="/o-nas" className={underlineClass}>
-                                O nás
-                            </Link>
-                            <Link href="/nas-tym" className={underlineClass}>
-                                Náš tým
-                            </Link>
-                            <Link href="/sluzby" className={underlineClass}>
-                                Služby
-                            </Link>
-                        </div>
+        <footer className="bg-neutral-900 text-white py-8 border-t border-neutral-600">
+            <div className="container mx-auto px-4 flex flex-col gap-4">
+                <div className="flex flex-row gap-4 text-center justify-center items-center">
+                    <p className="font-bold">ThinkHome</p>
+                </div>
+                <div className="flex flex-row justify-between items-start">
+                    <div className="flex flex-col gap-4 text-left">
+                        <p className="font-bold">Kontakt</p>
+                        <p>mailto:info@thinkhome.org</p>
+                        <p>tel:+420910129289</p>
                     </div>
-
-                    <div>
-                        <h3 className="text-2xl font-bold mb-4">Kontakt</h3>
-
-                        <div className="space-y-4">
-                            <Link href="/contact" className={underlineClass}>
-                                Kontakt
-                            </Link>
+                    <div className="flex flex-col gap-4 text-right">
+                        <div>
+                            <p className="font-bold">GitHub</p>
+                            <p>github.com/thinkhome</p>
+                        </div>
+                        <div>
+                            <p className="font-bold">© 2025 ThinkHome. Všechna práva vyhrazena.</p>
                         </div>
                     </div>
                 </div>
