@@ -1,36 +1,41 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Repository Guidelines
 
-## Getting Started
+## Project Structure & Module Organization
+- `src/app/` — Next.js App Router. Entrypoints: `layout.tsx`, `page.tsx`. Create route folders in lowercase (e.g., `src/app/about/page.tsx`). Route‑scoped pieces live in `src/app/components/`.
+- `src/components/` — shared React components; primitives in `src/components/ui/` (shadcn/magicui style).
+- `src/lib/` — utilities and helpers (e.g., `src/lib/utils.ts`).
+- `public/` — static assets served at the site root.
+- Config: `next.config.ts`, `eslint.config.mjs`, `tsconfig.json` (alias `@/*` → `src/*`).
 
-First, run the development server:
+## Build, Test, and Development Commands
+- `pnpm install` — install dependencies.
+- `pnpm dev` — run the app locally with Turbopack.
+- `pnpm build` — production build.
+- `pnpm start` — start the built app.
+- `pnpm lint` — run ESLint (extends `next/core-web-vitals` + TS rules).
+- `pnpm format` / `pnpm format:check` — Prettier write or check.
+  Prereqs: Node.js LTS and pnpm. Use `.env.local` for environment variables.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+## Coding Style & Naming Conventions
+- Language: TypeScript (`strict: true`). Prefer named exports.
+- Indentation: 2 spaces; keep lines focused and readable.
+- Components: PascalCase filenames (`Button.tsx`); utilities/hooks camelCase.
+- Imports: use the `@/*` alias; avoid deep relative paths (`../../../`).
+- Styling: Tailwind CSS in JSX; global styles in `src/app/globals.css`.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Testing Guidelines
+- This repo does not include a test runner. Validate changes with `pnpm lint`, `pnpm build`, and manual UI checks in the browser.
+- If adding tests in the future, keep them colocated with code and document chosen tooling in this README.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Commit & Pull Request Guidelines
+- Commits: concise, imperative subject (“Refactor hero layout for accessibility”). Add a short body when helpful. Link issues (`Closes #123`).
+- PRs: describe what/why, include screenshots or GIFs for UI changes, list notable trade‑offs. Ensure `pnpm lint` and `pnpm build` pass.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Security & Configuration Tips
+- Use `.env.local`; never commit secrets. Client‑exposed vars must be prefixed `NEXT_PUBLIC_`.
+- Keep changes scoped; avoid new dependencies without rationale. Update imports after moves/renames.
 
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Agent‑Specific Instructions
+- Keep diffs minimal and focused; follow the structure above.
+- Reference files explicitly (e.g., `src/app/page.tsx:1`).
+- Run `pnpm lint` before proposing changes and update this doc when conventions evolve.
