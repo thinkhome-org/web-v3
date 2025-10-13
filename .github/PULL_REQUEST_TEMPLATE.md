@@ -9,9 +9,8 @@ Adds a Vercel Flags Explorer boolean flag `hero-background` to control the anima
 - Discovery endpoint: `src/app/.well-known/vercel/flags/route.ts` (Authorization required; `overrideEncryptionMode: "encrypted"`)
 - Server evaluation: `src/app/page.tsx` calls `await heroBackground()` with a fallback to `true` on error
 - Client render: `src/app/home-content.tsx` mounts background + blur only when enabled
-- Docs: `docs/flags-hero-background.md` with examples; README section linking to it
 
-## How to Test
+## How to Test (Examples Inline)
 
 1) Install and start dev
 
@@ -56,4 +55,3 @@ HERO_BACKGROUND_DEFAULT=true pnpm start
 - [ ] Typecheck passes (`tsc --noEmit`)
 - [ ] Verified ON/OFF behavior locally
 - [ ] Verified discovery endpoint with Authorization header
-

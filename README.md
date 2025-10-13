@@ -16,14 +16,7 @@
 - `pnpm format` / `pnpm format:check` — Prettier write or check.
   Prereqs: Node.js LTS and pnpm. Use `.env.local` for environment variables.
 
-## Feature Flags (Hero Background)
-
-This project integrates Vercel Flags Explorer to control the animated hero background.
-
-- Flag key: `hero-background`
-- Default: ON
-- Discovery endpoint: `/.well-known/vercel/flags` (Authorization required; encrypted overrides)
-- Details and step‑by‑step examples: see `docs/flags-hero-background.md`.
+ 
 
 ## Coding Style & Naming Conventions
 - Language: TypeScript (`strict: true`). Prefer named exports.
