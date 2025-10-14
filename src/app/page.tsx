@@ -8,6 +8,7 @@ import About from "@/app/components/about";
 import GradualBlur from "@/components/ui/gradual-blur";
 import { BlurFade } from "@/components/ui/blur-fade";
 import ScrollReveal from "@/components/ScrollReveal";
+import Contact from "@/app/components/contact";
 
 export default function Home() {
     const bgRef = useRef<HTMLDivElement>(null);
