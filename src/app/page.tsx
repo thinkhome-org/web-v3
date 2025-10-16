@@ -43,7 +43,7 @@ export default function Home() {
             {/* Content */}
             <div className="relative overflow-x-clip" style={{ zIndex: 1 }}>
                 {/* Hero section */}
-                <div className="h-screen flex items-center justify-center p-8 sm:p-20">
+                <div className="h-screen flex items-center justify-center p-8 sm:p-20 backdrop-blur supports-[backdrop-filter]:bg-background/5">
                     <div className="w-full max-w-6xl">
                         <Hero />
                     </div>
