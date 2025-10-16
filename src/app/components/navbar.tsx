@@ -6,9 +6,9 @@
  * - Uses Next App Router; active link determined from pathname.
  */
 
+import Image from "next/image";
 import Link from "next/link";
 import { Menu } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -40,8 +40,12 @@ export default function Navbar({ className }: NavbarProps) {
         <header className={cn("fixed top-4 z-50 w-full", className)}>
             <div className="mx-auto grid h-14 max-w-6xl grid-cols-3 items-center px-4">
                 <div className="flex items-center gap-3">
-                    <Link href="/" className="rounded-full border bg-background/40 backdrop-blur px-3 py-1.5 font-semibold tracking-tight shadow supports-[backdrop-filter]:bg-background/30">
-                        ThinkHome
+                    <Link
+                        href="/"
+                        className="rounded-full border bg-background/40 backdrop-blur px-3 py-1.5 shadow supports-[backdrop-filter]:bg-background/30"
+                        aria-label="ThinkHome domů"
+                    >
+                        <Image src="/logo-small.svg" alt="ThinkHome" width={155} height={30} className="h-6 w-auto" priority />
                     </Link>
                 </div>
 
@@ -80,8 +84,8 @@ export default function Navbar({ className }: NavbarProps) {
                                 <SheetTitle className="sr-only">Navigace</SheetTitle>
                                 <SheetDescription className="sr-only">Hlavní menu</SheetDescription>
                                 <div className="px-4 py-4">
-                                    <Link href="/" className="font-semibold tracking-tight">
-                                        ThinkHome
+                                    <Link href="/" className="inline-flex items-center gap-2 font-semibold tracking-tight">
+                                        <Image src="/logo-small.svg" alt="ThinkHome" width={155} height={30} className="h-6 w-auto" />
                                     </Link>
                                 </div>
                                 <div className="space-y-1 px-2 pb-4">

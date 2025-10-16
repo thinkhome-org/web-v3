@@ -8,6 +8,8 @@
  */
 
 // No React hooks needed here; PillTabs handles interactions
+import Image from "next/image";
+import type { MouseEvent } from "react";
 import { BlurFade } from "@/components/ui/blur-fade";
 import PillTabs from "@/components/ui/pill-tabs";
 import { cn } from "@/lib/utils";
@@ -16,7 +18,7 @@ import { HERO_CTAS } from "@/config/nav";
 export default function Hero() {
 
     // Smooth-scroll to a section and update the hash (no page reload)
-    function scrollToId(e: React.MouseEvent, id: string) {
+    function scrollToId(e: MouseEvent<HTMLAnchorElement>, id: string) {
         e.preventDefault();
         const el = document.getElementById(id);
         if (el) {
@@ -32,6 +34,9 @@ export default function Hero() {
     return (
         <div className="h-full flex flex-col items-center text-center justify-center">
             <div className="space-y-4">
+                <BlurFade>
+                    <Image src="/logo-large.svg" alt="ThinkHome symbol" width={60} height={60} className="mx-auto h-16 w-auto" priority />
+                </BlurFade>
                 <BlurFade>
                     <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold text-balance break-words">Moderní IT bez starostí</h1>
                 </BlurFade>
