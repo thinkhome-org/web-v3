@@ -35,7 +35,7 @@ export default function Hero() {
         <div className="h-full flex flex-col items-center text-center justify-center">
             <div className="space-y-4">
                 <BlurFade>
-                    <Image src="/logo-large.svg" alt="ThinkHome symbol" width={60} height={60} className="mx-auto h-16 w-auto" priority />
+                    <Image src="/logo-mark.svg" alt="ThinkHome symbol" width={60} height={60} className="mx-auto h-16 w-auto" priority />
                 </BlurFade>
                 <BlurFade>
                     <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold text-balance break-words">Moderní IT bez starostí</h1>

@@ -45,7 +45,7 @@ export default function Navbar({ className }: NavbarProps) {
                         className="rounded-full border bg-background/40 backdrop-blur px-3 py-1.5 shadow supports-[backdrop-filter]:bg-background/30"
                         aria-label="ThinkHome domů"
                     >
-                        <Image src="/logo-small.svg" alt="ThinkHome" width={155} height={30} className="h-6 w-auto" priority />
+                        <Image src="/logo-wordmark.svg" alt="ThinkHome" width={155} height={30} className="h-6 w-auto" priority />
                     </Link>
                 </div>
 
@@ -85,7 +85,7 @@ export default function Navbar({ className }: NavbarProps) {
                                 <SheetDescription className="sr-only">Hlavní menu</SheetDescription>
                                 <div className="px-4 py-4">
                                     <Link href="/" className="inline-flex items-center gap-2 font-semibold tracking-tight">
-                                        <Image src="/logo-small.svg" alt="ThinkHome" width={155} height={30} className="h-6 w-auto" />
+                                        <Image src="/logo-wordmark.svg" alt="ThinkHome" width={155} height={30} className="h-6 w-auto" />
                                     </Link>
                                 </div>
                                 <div className="space-y-1 px-2 pb-4">
