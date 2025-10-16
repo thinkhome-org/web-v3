@@ -1,5 +1,11 @@
 "use client";
 
+/**
+ * Navbar
+ * - Sticky, translucent header with a sliding "pill" indicator.
+ * - Uses Next App Router; active link determined from pathname.
+ */
+
 import Link from "next/link";
 import { Menu } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
@@ -7,47 +13,28 @@ import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger, SheetTitle, SheetDescription } from "@/components/ui/sheet";
+import PillTabs from "@/components/ui/pill-tabs";
+import { MAIN_NAV_LINKS } from "@/config/nav";
 
 type NavbarProps = {
     className?: string;
 };
 
-const links: Array<{ href: string; label: string }> = [
-    { href: "/", label: "Domů" },
-    { href: "/o-nas", label: "O nás" },
-    { href: "/nas-tym", label: "Náš tým" },
-    { href: "/sluzby", label: "Služby" },
-];
+const links = MAIN_NAV_LINKS;
 
 export default function Navbar({ className }: NavbarProps) {
     const pathname = usePathname() || "/";
-    const itemRefs = useRef<(HTMLAnchorElement | null)[]>([]);
-    const containerRef = useRef<HTMLDivElement | null>(null);
-    const [indicator, setIndicator] = useState<{ width: number; left: number }>({ width: 0, left: 0 });
 
-    const activeIndex = (() => {
-        const nonRootMatch = links.findIndex((l) => l.href !== "/" && pathname.startsWith(l.href));
-        if (nonRootMatch !== -1) return nonRootMatch;
-        return links.findIndex((l) => l.href === pathname) !== -1 ? links.findIndex((l) => l.href === pathname) : 0;
-    })();
-
-    function updateIndicatorFrom(index: number) {
-        const el = itemRefs.current[index];
-        const container = containerRef.current;
-        if (!el || !container) return;
-        const linkRect = el.getBoundingClientRect();
-        const containerRect = container.getBoundingClientRect();
-        setIndicator({ width: linkRect.width, left: linkRect.left - containerRect.left });
+    // Resolve which link is "active" based on the current path
+    function getActiveIndex(path: string): number {
+        const nonRootMatch = links.findIndex((l) => l.href !== "/" && path.startsWith(l.href))
+        if (nonRootMatch !== -1) return nonRootMatch
+        const exact = links.findIndex((l) => l.href === path)
+        return exact !== -1 ? exact : 0
     }
+    const activeIndex = getActiveIndex(pathname)
 
-    useEffect(() => {
-        updateIndicatorFrom(activeIndex);
-        // Recompute on resize to keep pill aligned
-        const onResize = () => updateIndicatorFrom(activeIndex);
-        window.addEventListener("resize", onResize);
-        return () => window.removeEventListener("resize", onResize);
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [activeIndex]);
+    // (Pill animation handled by PillTabs)
 
     return (
         <header className={cn("fixed top-4 z-50 w-full", className)}>
@@ -58,27 +45,23 @@ export default function Navbar({ className }: NavbarProps) {
                     </Link>
                 </div>
 
-                <nav className="relative hidden justify-center md:flex">
-                    <div ref={containerRef} className="group relative flex items-center whitespace-nowrap rounded-full border p-1 shadow-lg backdrop-blur supports-[backdrop-filter]:bg-background/30" onMouseLeave={() => updateIndicatorFrom(activeIndex)}>
-                        <span className="pointer-events-none absolute left-0 top-1 bottom-1 rounded-full bg-foreground/10 shadow transition-[transform,width,background-color] duration-300 ease-out group-hover:bg-foreground/20" style={{ width: indicator.width, transform: `translateX(${indicator.left}px)` }} />
-                        {links.map((link, i) => {
-                            const isActive = i === activeIndex;
-                            return (
-                                <Link
-                                    key={link.href}
-                                    href={link.href}
-                                    ref={(el) => {
-                                        itemRefs.current[i] = el;
-                                    }}
-                                    onMouseEnter={() => updateIndicatorFrom(i)}
-                                    onFocus={() => updateIndicatorFrom(i)}
-                                    className={cn("relative z-10 rounded-full px-3 py-1.5 text-sm transition-colors", isActive ? "text-foreground" : "text-muted-foreground hover:text-foreground")}
-                                >
-                                    {link.label}
-                                </Link>
-                            );
-                        })}
-                    </div>
+                <nav className="relative hidden justify-center md:flex" aria-label="Hlavní navigace">
+                    <PillTabs
+                        items={links}
+                        activeIndex={activeIndex}
+                        renderItem={({ item, index, ref, onMouseEnter, onFocus, isActive, className }) => (
+                            <Link
+                                key={item.href}
+                                href={item.href}
+                                ref={ref}
+                                onMouseEnter={onMouseEnter}
+                                onFocus={onFocus}
+                                className={cn(className, isActive ? "text-foreground" : "text-muted-foreground hover:text-foreground")}
+                            >
+                                {item.label}
+                            </Link>
+                        )}
+                    />
                 </nav>
 
                 <div className="flex items-center justify-end">

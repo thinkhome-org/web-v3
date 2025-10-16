@@ -1,4 +1,9 @@
 "use client";
+/**
+ * ScrollReveal
+ * - Small wrapper that splits text into words and reveals them as you scroll.
+ * - Powered by GSAP + ScrollTrigger; keep props minimal for beginners.
+ */
 
 import React, { useEffect, useRef, useMemo, ReactNode, RefObject } from 'react';
 import { gsap } from 'gsap';

@@ -1,33 +1,33 @@
 "use client";
 
-import Link from "next/link";
-import { useEffect, useRef, useState } from "react";
-import DecryptedText from "@/components/DecryptedText";
+/**
+ * Hero
+ * - Centered headline and two CTAs.
+ * - The small sliding pill under the links is purely decorative
+ *   and updates based on hover/focus.
+ */
+
+// No React hooks needed here; PillTabs handles interactions
 import { BlurFade } from "@/components/ui/blur-fade";
+import PillTabs from "@/components/ui/pill-tabs";
+import { cn } from "@/lib/utils";
+import { HERO_CTAS } from "@/config/nav";
 
 export default function Hero() {
-    const itemRefs = useRef<(HTMLAnchorElement | null)[]>([]);
-    const containerRef = useRef<HTMLDivElement | null>(null);
-    const [indicator, setIndicator] = useState<{ width: number; left: number }>({ width: 0, left: 0 });
+
+    // Smooth-scroll to a section and update the hash (no page reload)
+    function scrollToId(e: React.MouseEvent, id: string) {
+        e.preventDefault();
+        const el = document.getElementById(id);
+        if (el) {
+            el.scrollIntoView({ behavior: "smooth", block: "start" });
+            history.replaceState(null, "", `#${id}`);
+        }
+    }
 
     const activeIndex = 0;
 
-    function updateIndicatorFrom(index: number) {
-        const el = itemRefs.current[index];
-        const container = containerRef.current;
-        if (!el || !container) return;
-        const linkRect = el.getBoundingClientRect();
-        const containerRect = container.getBoundingClientRect();
-        setIndicator({ width: linkRect.width, left: linkRect.left - containerRect.left });
-    }
-
-    useEffect(() => {
-        updateIndicatorFrom(activeIndex);
-        const onResize = () => updateIndicatorFrom(activeIndex);
-        window.addEventListener("resize", onResize);
-        return () => window.removeEventListener("resize", onResize);
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
+    // No setup needed; PillTabs manages indicator sizing and hover/focus behavior
 
     return (
         <div className="h-full flex flex-col items-center text-center justify-center">
@@ -40,31 +40,28 @@ export default function Hero() {
                 </h2></BlurFade>
             </div>
             <div className="pt-8">
-                <div ref={containerRef} className="group relative inline-flex items-center whitespace-nowrap rounded-full border p-1.5 shadow-lg backdrop-blur supports-[backdrop-filter]:bg-background/30" onMouseLeave={() => updateIndicatorFrom(activeIndex)}>
-                    <span className="pointer-events-none absolute left-0 top-1.5 bottom-1.5 rounded-full bg-foreground/10 shadow transition-[transform,width,background-color] duration-300 ease-out group-hover:bg-foreground/20" style={{ width: indicator.width, transform: `translateX(${indicator.left}px)` }} />
-                    <Link
-                        href="/sluzby"
-                        ref={(el) => {
-                            itemRefs.current[0] = el;
-                        }}
-                        onMouseEnter={() => updateIndicatorFrom(0)}
-                        onFocus={() => updateIndicatorFrom(0)}
-                        className="relative z-10 rounded-full px-6 py-3 text-base transition-colors text-muted-foreground hover:text-foreground"
-                    >
-                        Kontaktujte nás
-                    </Link>
-                    <Link
-                        href="/contact"
-                        ref={(el) => {
-                            itemRefs.current[1] = el;
-                        }}
-                        onMouseEnter={() => updateIndicatorFrom(1)}
-                        onFocus={() => updateIndicatorFrom(1)}
-                        className="relative z-10 rounded-full px-6 py-3 text-base transition-colors text-muted-foreground hover:text-foreground"
-                    >
-                        Naše služby
-                    </Link>
-                </div>
+                <PillTabs
+                    items={HERO_CTAS}
+                    activeIndex={activeIndex}
+                    pillClassName="top-1.5 bottom-1.5"
+                    renderItem={({ item, ref, onMouseEnter, onFocus, isActive, className, index }) => (
+                        <a
+                            key={item.id}
+                            href={`#${item.id}`}
+                            ref={ref}
+                            onMouseEnter={onMouseEnter}
+                            onFocus={onFocus}
+                            onClick={(e) => scrollToId(e, item.id)}
+                            className={cn(
+                                className,
+                                "px-6 py-3 text-base",
+                                isActive ? "text-foreground" : "text-muted-foreground hover:text-foreground",
+                            )}
+                        >
+                            {item.label}
+                        </a>
+                    )}
+                />
             </div>
         </div>
     );

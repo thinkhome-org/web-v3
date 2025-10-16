@@ -1,9 +1,11 @@
-import FeatureCard from "./feature-card";
+/**
+ * About (marketing sections)
+ * - Services grid, testimonials carousel, and contact block.
+ * - Keeps copy in Czech; adjust content only, not structure.
+ */
 import { InfiniteMovingCards } from "@/components/ui/infinite-moving-cards";
 import { BlurFade } from "@/components/ui/blur-fade";
-import ScrollReveal from "@/components/ScrollReveal";
 import { CardBody, CardContainer, CardItem } from "@/components/ui/3d-card";
-import TiltedCard from "@/components/TiltedCard";
 
 export default function About() {
     const testimonials = [
@@ -27,7 +29,7 @@ export default function About() {
     return (
         <div className="space-y-24 pb-16">
             {/* Services Section */}
-            <div className="max-w-6xl mx-auto px-8 space-y-8">
+            <div id="services" className="max-w-6xl mx-auto px-8 space-y-8 scroll-mt-24">
                 <div className="text-center space-y-4">
                     <BlurFade delay={0.1}>
                         <h2 className="text-4xl font-bold">S čím pomáháme</h2>
@@ -94,7 +96,7 @@ export default function About() {
             </div>
 
             {/* Contact Section */}
-            <div className="max-w-4xl mx-auto px-8 space-y-8">
+            <div id="contact" className="max-w-4xl mx-auto px-8 space-y-8 scroll-mt-24">
                 <div className="text-center space-y-4">
                     <BlurFade>
                         <h2 className="text-4xl font-bold">Potkejme se</h2>

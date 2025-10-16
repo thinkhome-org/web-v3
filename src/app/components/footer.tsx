@@ -1,3 +1,7 @@
+/**
+ * Footer
+ * - Simple, accessible footer with a secondary nav.
+ */
 import Link from "next/link";
 
 export default function Footer() {

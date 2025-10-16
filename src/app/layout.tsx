@@ -1,7 +1,14 @@
+/**
+ * App Root Layout
+ * - Provides global fonts, metadata, and the dark theme class.
+ * - Renders the persistent Navbar and optional Vercel Toolbar in development.
+ */
 import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import Navbar from "@/app/components/navbar";
+import { Analytics } from "@vercel/analytics/next";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 import { VercelToolbar } from "@vercel/toolbar/next";
 
 const geistSans = Geist({
@@ -36,6 +43,8 @@ export default function RootLayout({
             <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
                 <Navbar />
                 {children}
+                <Analytics />
+                <SpeedInsights />
                 {shouldInjectToolbar && <VercelToolbar />}
             </body>
         </html>
