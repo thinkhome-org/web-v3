@@ -7,7 +7,7 @@ const BASE_URL = process.env.E2E_BASE_URL || 'http://localhost:3000';
  * - Hero layer is fixed to viewport
  * - Header stays on top (z-index higher than hero)
  * - Content scrolls over hero (about-section overlays hero after scrolling)
- * - Background stays unblurred while scrolling
+ * - Background has a fixed 5px blur while scrolling
  */
 
 test('fixed hero with overlaying content and sticky header', async ({ page }) => {
@@ -40,9 +40,9 @@ test('fixed hero with overlaying content and sticky header', async ({ page }) =>
   const bg = page.getByTestId('bg-layer');
   await expect(bg).toBeVisible();
   const filterBefore = await bg.evaluate((el) => getComputedStyle(el).filter);
-  expect(filterBefore).toBe('none');
+  expect(filterBefore).toBe('blur(5px)');
 
   await page.evaluate(() => window.scrollTo({ top: window.innerHeight * 1.8 }));
   const filterAfter = await bg.evaluate((el) => getComputedStyle(el).filter);
-  expect(filterAfter).toBe('none');
+  expect(filterAfter).toBe('blur(5px)');
 });

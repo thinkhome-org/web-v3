@@ -14,7 +14,7 @@ export default function Home() {
 
     useEffect(() => {
         if (bgRef.current) {
-            bgRef.current.style.filter = 'none';
+            bgRef.current.style.filter = 'blur(5px)';
         }
     }, []);
 
