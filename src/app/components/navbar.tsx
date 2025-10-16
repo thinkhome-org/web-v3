@@ -6,7 +6,7 @@ import { useEffect, useRef, useState } from "react";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { Sheet, SheetContent, SheetTrigger, SheetTitle, SheetDescription } from "@/components/ui/sheet";
 
 type NavbarProps = {
     className?: string;
@@ -20,7 +20,7 @@ const links: Array<{ href: string; label: string }> = [
 ];
 
 export default function Navbar({ className }: NavbarProps) {
-    const pathname = usePathname();
+    const pathname = usePathname() || "/";
     const itemRefs = useRef<(HTMLAnchorElement | null)[]>([]);
     const containerRef = useRef<HTMLDivElement | null>(null);
     const [indicator, setIndicator] = useState<{ width: number; left: number }>({ width: 0, left: 0 });
@@ -93,6 +93,9 @@ export default function Navbar({ className }: NavbarProps) {
                                 </Button>
                             </SheetTrigger>
                             <SheetContent side="left" className="w-72 p-0">
+                                {/* Accessible title/description for the dialog (hidden visually) */}
+                                <SheetTitle className="sr-only">Navigace</SheetTitle>
+                                <SheetDescription className="sr-only">Hlavní menu</SheetDescription>
                                 <div className="px-4 py-4">
                                     <Link href="/" className="font-semibold tracking-tight">
                                         ThinkHome

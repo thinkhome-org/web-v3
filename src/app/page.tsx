@@ -1,8 +1,8 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import React, { useEffect, useRef } from "react";
+import dynamic from "next/dynamic";
 import Hero from "@/app/components/hero";
-import FaultyTerminal from "@/app/components/bg";
 import Footer from "@/app/components/footer";
 import About from "@/app/components/about";
 import GradualBlur from "@/components/ui/gradual-blur";
@@ -37,13 +37,11 @@ export default function Home() {
 
     return (
         <div className="relative min-h-screen">
-            {/* Fixed background */}
-            <div ref={bgRef} className="fixed top-0 left-0 w-full h-screen pointer-events-none will-change-[filter]" style={{ zIndex: 0 }}>
-                <FaultyTerminal scale={1.5} gridMul={[2, 1]} digitSize={1.2} timeScale={1} pause={false} scanlineIntensity={1} glitchAmount={1} flickerAmount={1} noiseAmp={1} chromaticAberration={1} dither={0} curvature={0} tint="#FF0000" mouseReact={true} mouseStrength={0.5} pageLoadAnimation={true} brightness={0.3} />
-            </div>
+            {/* Fixed background (code-split, client-only) */}
+            <Background ref={bgRef} />
 
             {/* Content */}
-            <div className="relative" style={{ zIndex: 1 }}>
+            <div className="relative overflow-x-clip" style={{ zIndex: 1 }}>
                 {/* Hero section */}
                 <div className="h-screen flex items-center justify-center p-8 sm:p-20">
                     <div className="w-full max-w-6xl">
@@ -60,3 +58,14 @@ export default function Home() {
         </div>
     );
 }
+
+// Lazy background container
+const FaultyTerminal = dynamic(() => import("@/app/components/bg"), { ssr: false, loading: () => null });
+
+const Background = React.forwardRef<HTMLDivElement, {}>(function Background(_, ref) {
+    return (
+        <div ref={ref} className="fixed top-0 left-0 w-full h-screen pointer-events-none will-change-[filter]" style={{ zIndex: 0 }}>
+            <FaultyTerminal scale={1.5} gridMul={[2, 1]} digitSize={1.2} timeScale={1} pause={false} scanlineIntensity={1} glitchAmount={1} flickerAmount={1} noiseAmp={1} chromaticAberration={1} dither={0} curvature={0} tint="#FF0000" mouseReact={true} mouseStrength={0.5} pageLoadAnimation={true} brightness={0.3} />
+        </div>
+    );
+});

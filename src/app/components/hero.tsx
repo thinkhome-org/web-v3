@@ -32,8 +32,10 @@ export default function Hero() {
     return (
         <div className="h-full flex flex-col items-center text-center justify-center">
             <div className="space-y-4">
-                <BlurFade><h1 className="text-6xl font-bold">Moderní IT bez starostí</h1></BlurFade>
-                <BlurFade><h2 className="text-2xl max-w-3xl">
+                <BlurFade>
+                    <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold text-balance break-words">Moderní IT bez starostí</h1>
+                </BlurFade>
+                <BlurFade><h2 className="text-lg sm:text-xl md:text-2xl max-w-3xl text-pretty">
                     IT, které prostě funguje. Zrychlíme práci, snížíme náklady a dáme technologiím jasný řád – přehledně, klidně a bez zbytečných složitostí.
                 </h2></BlurFade>
             </div>

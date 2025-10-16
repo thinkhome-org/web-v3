@@ -269,8 +269,11 @@ export default function FaultyTerminal({ scale = 1, gridMul = [2, 1], digitSize 
     // Resolve DPR safely for SSR
     const resolvedDpr = useMemo(() => {
         if (typeof dpr === "number") return dpr;
-        if (typeof window !== "undefined") return Math.min(window.devicePixelRatio || 1, 2);
-        return 1;
+        if (typeof window === "undefined") return 1;
+        const prefersReducedMotion = window.matchMedia?.("(prefers-reduced-motion: reduce)").matches ?? false;
+        const isMobile = window.innerWidth < 768;
+        if (prefersReducedMotion || isMobile) return 1;
+        return Math.min(window.devicePixelRatio || 1, 1.5);
     }, [dpr]);
 
     useEffect(() => {
@@ -369,6 +372,15 @@ export default function FaultyTerminal({ scale = 1, gridMul = [2, 1], digitSize 
 
         if (mouseReact) ctn.addEventListener("mousemove", handleMouseMove);
 
+        const onVisibility = () => {
+            if (document.hidden) {
+                if (rafRef.current) cancelAnimationFrame(rafRef.current);
+            } else {
+                rafRef.current = requestAnimationFrame(update);
+            }
+        };
+        document.addEventListener("visibilitychange", onVisibility);
+
         return () => {
             cancelAnimationFrame(rafRef.current);
             resizeObserver.disconnect();
@@ -377,6 +389,7 @@ export default function FaultyTerminal({ scale = 1, gridMul = [2, 1], digitSize 
             gl.getExtension("WEBGL_lose_context")?.loseContext();
             loadAnimationStartRef.current = 0;
             timeOffsetRef.current = Math.random() * 100;
+            document.removeEventListener("visibilitychange", onVisibility);
         };
     }, [resolvedDpr, pause, timeScale, scale, gridMul, digitSize, scanlineIntensity, glitchAmount, flickerAmount, noiseAmp, chromaticAberration, ditherValue, curvature, tintVec, mouseReact, mouseStrength, pageLoadAnimation, brightness, handleMouseMove]);
 
