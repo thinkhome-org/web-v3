@@ -13,26 +13,9 @@ export default function Home() {
     const bgRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
-        let ticking = false;
-
-        const handleScroll = () => {
-            if (!ticking) {
-                window.requestAnimationFrame(() => {
-                    const scrollY = window.scrollY;
-                    const blurAmount = Math.min(scrollY / 60, 10);
-
-                    if (bgRef.current) {
-                        bgRef.current.style.filter = `blur(${blurAmount}px)`;
-                    }
-
-                    ticking = false;
-                });
-                ticking = true;
-            }
-        };
-
-        window.addEventListener("scroll", handleScroll, { passive: true });
-        return () => window.removeEventListener("scroll", handleScroll);
+        if (bgRef.current) {
+            bgRef.current.style.filter = 'none';
+        }
     }, []);
 
     return (
@@ -40,17 +23,20 @@ export default function Home() {
             {/* Fixed background (code-split, client-only) */}
             <Background ref={bgRef} />
 
-            {/* Content */}
-            <div className="relative overflow-x-clip" style={{ zIndex: 1 }}>
-                {/* Hero section */}
-                <div className="h-screen flex items-center justify-center p-8 sm:p-20">
-                    <div className="w-full max-w-6xl">
-                        <Hero />
-                    </div>
+            {/* Fixed hero layer under header, above background */}
+            <div className="fixed inset-0 z-10 flex items-center justify-center px-8 sm:px-20 pointer-events-auto" data-testid="fixed-hero-layer">
+                <div className="w-full max-w-6xl">
+                    <Hero />
                 </div>
+            </div>
+
+            {/* Content (scrolls over hero) */}
+            <div className="relative z-20 overflow-x-clip">
+                {/* Spacer to reveal fixed hero before content overlays */}
+                <div className="h-screen" aria-hidden />
 
                 {/* About section that overlaps */}
-                <div className="relative bg-background rounded-t-[3rem] pt-20 pb-20 shadow-2xl min-h-screen">
+                <div className="relative bg-background rounded-t-[3rem] pt-20 pb-20 shadow-2xl min-h-screen" data-testid="about-section">
                     <About />
                 </div>
                 <Footer />
@@ -64,7 +50,7 @@ const FaultyTerminal = dynamic(() => import("@/app/components/bg"), { ssr: false
 
 const Background = React.forwardRef<HTMLDivElement, {}>(function Background(_, ref) {
     return (
-        <div ref={ref} className="fixed top-0 left-0 w-full h-screen pointer-events-none will-change-[filter]" style={{ zIndex: 0 }}>
+        <div ref={ref} className="fixed top-0 left-0 w-full h-screen pointer-events-none will-change-[filter]" style={{ zIndex: 0 }} data-testid="bg-layer">
             <FaultyTerminal scale={1.5} gridMul={[2, 1]} digitSize={1.2} timeScale={1} pause={false} scanlineIntensity={1} glitchAmount={1} flickerAmount={1} noiseAmp={1} chromaticAberration={1} dither={0} curvature={0} tint="#FF0000" mouseReact={true} mouseStrength={0.5} pageLoadAnimation={true} brightness={0.3} />
         </div>
     );
