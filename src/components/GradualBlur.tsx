@@ -1,3 +1,8 @@
+/**
+ * GradualBlur
+ * - Creates layered gradient divs to fake a soft blur/fade effect.
+ * - Preset-driven API to keep usage simple.
+ */
 import React, { CSSProperties, useEffect, useRef, useState, useMemo, PropsWithChildren } from 'react';
 import * as math from 'mathjs';
 

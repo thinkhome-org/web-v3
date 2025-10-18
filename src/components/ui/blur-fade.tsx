@@ -23,7 +23,8 @@ interface BlurFadeProps extends MotionProps {
 
 export function BlurFade({ children, className, variant, duration = 0.4, delay = 0, offset = 6, direction = "down", inView = true, inViewMargin = "-50px", blur = "6px", ...props }: BlurFadeProps) {
     const ref = useRef(null);
-    const inViewResult = useInView(ref, { once: true, margin: inViewMargin });
+    // Replay animation whenever the element re-enters the viewport
+    const inViewResult = useInView(ref, { once: false, margin: inViewMargin });
     const isInView = !inView || inViewResult;
     const defaultVariants: Variants = {
         hidden: {

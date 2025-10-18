@@ -1,10 +1,17 @@
 "use client";
+/**
+ * TerminalBackground (GPU shader canvas)
+ * - Lightweight OGL renderer that draws a stylized terminal grid.
+ * - All visual tuning is controlled via props (see TerminalBackgroundProps).
+ * - Automatically resizes with its container and throttles DPR for mobile.
+ */
 import { Renderer, Program, Mesh, Color, Triangle } from "ogl";
 import React, { useEffect, useRef, useMemo, useCallback } from "react";
 
 type Vec2 = [number, number];
 
-export interface FaultyTerminalProps extends React.HTMLAttributes<HTMLDivElement> {
+// Public props to tweak the shader look & performance
+export interface TerminalBackgroundProps extends React.HTMLAttributes<HTMLDivElement> {
     scale?: number;
     gridMul?: Vec2;
     digitSize?: number;
@@ -242,7 +249,7 @@ function hexToRgb(hex: string): [number, number, number] {
     return [((num >> 16) & 255) / 255, ((num >> 8) & 255) / 255, (num & 255) / 255];
 }
 
-export default function FaultyTerminal({ scale = 1, gridMul = [2, 1], digitSize = 1.5, timeScale = 0.3, pause = false, scanlineIntensity = 0.3, glitchAmount = 1, flickerAmount = 1, noiseAmp = 1, chromaticAberration = 0, dither = 0, curvature = 0.2, tint = "#ffffff", mouseReact = true, mouseStrength = 0.2, dpr, pageLoadAnimation = true, brightness = 1, className, style, ...rest }: FaultyTerminalProps) {
+export default function TerminalBackground({ scale = 1, gridMul = [2, 1], digitSize = 1.5, timeScale = 0.3, pause = false, scanlineIntensity = 0.3, glitchAmount = 1, flickerAmount = 1, noiseAmp = 1, chromaticAberration = 0, dither = 0, curvature = 0.2, tint = "#ffffff", mouseReact = true, mouseStrength = 0.2, dpr, pageLoadAnimation = true, brightness = 1, className, style, ...rest }: TerminalBackgroundProps) {
     const containerRef = useRef<HTMLDivElement>(null);
     const programRef = useRef<Program>(null);
     const rendererRef = useRef<Renderer>(null);
@@ -269,8 +276,11 @@ export default function FaultyTerminal({ scale = 1, gridMul = [2, 1], digitSize 
     // Resolve DPR safely for SSR
     const resolvedDpr = useMemo(() => {
         if (typeof dpr === "number") return dpr;
-        if (typeof window !== "undefined") return Math.min(window.devicePixelRatio || 1, 2);
-        return 1;
+        if (typeof window === "undefined") return 1;
+        const prefersReducedMotion = window.matchMedia?.("(prefers-reduced-motion: reduce)").matches ?? false;
+        const isMobile = window.innerWidth < 768;
+        if (prefersReducedMotion || isMobile) return 1;
+        return Math.min(window.devicePixelRatio || 1, 1.5);
     }, [dpr]);
 
     useEffect(() => {
@@ -369,6 +379,15 @@ export default function FaultyTerminal({ scale = 1, gridMul = [2, 1], digitSize 
 
         if (mouseReact) ctn.addEventListener("mousemove", handleMouseMove);
 
+        const onVisibility = () => {
+            if (document.hidden) {
+                if (rafRef.current) cancelAnimationFrame(rafRef.current);
+            } else {
+                rafRef.current = requestAnimationFrame(update);
+            }
+        };
+        document.addEventListener("visibilitychange", onVisibility);
+
         return () => {
             cancelAnimationFrame(rafRef.current);
             resizeObserver.disconnect();
@@ -377,6 +396,7 @@ export default function FaultyTerminal({ scale = 1, gridMul = [2, 1], digitSize 
             gl.getExtension("WEBGL_lose_context")?.loseContext();
             loadAnimationStartRef.current = 0;
             timeOffsetRef.current = Math.random() * 100;
+            document.removeEventListener("visibilitychange", onVisibility);
         };
     }, [resolvedDpr, pause, timeScale, scale, gridMul, digitSize, scanlineIntensity, glitchAmount, flickerAmount, noiseAmp, chromaticAberration, ditherValue, curvature, tintVec, mouseReact, mouseStrength, pageLoadAnimation, brightness, handleMouseMove]);
 

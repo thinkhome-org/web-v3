@@ -1,3 +1,8 @@
+/**
+ * DecryptedText
+ * - Fun text effect: cycles characters until the original string "decrypts".
+ * - Keep for small accents; avoid for long paragraphs for readability.
+ */
 import { useEffect, useState, useRef } from 'react';
 import { motion, HTMLMotionProps } from 'motion/react';
 
@@ -13,6 +18,8 @@ interface DecryptedTextProps extends HTMLMotionProps<'span'> {
   encryptedClassName?: string;
   parentClassName?: string;
   animateOn?: 'view' | 'hover' | 'both';
+  /** When animateOn includes 'view', trigger on every re-entry into viewport */
+  replayOnView?: boolean;
 }
 
 export default function DecryptedText({
@@ -27,6 +34,7 @@ export default function DecryptedText({
   parentClassName = '',
   encryptedClassName = '',
   animateOn = 'hover',
+  replayOnView = true,
   ...props
 }: DecryptedTextProps) {
   const [displayText, setDisplayText] = useState<string>(text);
@@ -149,9 +157,15 @@ export default function DecryptedText({
 
     const observerCallback = (entries: IntersectionObserverEntry[]) => {
       entries.forEach(entry => {
-        if (entry.isIntersecting && !hasAnimated) {
-          setIsHovering(true);
-          setHasAnimated(true);
+        if (entry.isIntersecting) {
+          if (replayOnView || !hasAnimated) {
+            setIsHovering(true);
+            if (!replayOnView) setHasAnimated(true);
+          }
+        } else if (!entry.isIntersecting && replayOnView) {
+          // reset when leaving viewport so it can replay next time
+          setIsHovering(false);
+          setHasAnimated(false);
         }
       });
     };
@@ -171,7 +185,7 @@ export default function DecryptedText({
     return () => {
       if (currentRef) observer.unobserve(currentRef);
     };
-  }, [animateOn, hasAnimated]);
+  }, [animateOn, hasAnimated, replayOnView]);
 
   const hoverProps =
     animateOn === 'hover' || animateOn === 'both'
