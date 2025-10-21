@@ -2,7 +2,6 @@ import React from "react"
 import Hero from "@/app/components/hero"
 import Footer from "@/app/components/footer"
 import About from "@/app/components/about"
-import GradualBlur from "@/components/ui/gradual-blur"
 import Background from "@/app/components/background"
 
 export default function Home() {
@@ -13,7 +12,7 @@ export default function Home() {
 
       {/* Fixed hero layer under header, above background */}
       <div
-        className="fixed inset-0 z-10 flex items-center justify-center px-8 sm:px-20 pointer-events-auto"
+        className="fixed inset-0 z-10 flex items-center justify-center px-8 sm:px-20 pointer-events-auto backdrop-blur-sm supports-[backdrop-filter]:bg-background/10 bg-background/0"
         data-testid="fixed-hero-layer"
       >
         <div className="w-full max-w-6xl">
@@ -30,6 +29,7 @@ export default function Home() {
         <div
           className="relative bg-background rounded-t-[3rem] pt-20 pb-20 shadow-2xl min-h-screen pointer-events-auto"
           data-testid="about-section"
+          style={{ contentVisibility: "auto", containIntrinsicSize: "1000px 1200px" }}
         >
           <About />
         </div>

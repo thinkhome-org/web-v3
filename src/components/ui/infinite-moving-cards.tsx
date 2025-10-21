@@ -2,6 +2,7 @@
 
 import { cn } from "@/lib/utils";
 import React, { useEffect, useState } from "react";
+import { usePrefersReducedMotion } from "@/lib/use-prefers-reduced-motion";
 
 export const InfiniteMovingCards = ({
     items,
@@ -20,13 +21,36 @@ export const InfiniteMovingCards = ({
     pauseOnHover?: boolean;
     className?: string;
 }) => {
+    const prefersReducedMotion = usePrefersReducedMotion();
+
     const containerRef = React.useRef<HTMLDivElement>(null);
     const scrollerRef = React.useRef<HTMLUListElement>(null);
 
-    useEffect(() => {
-        addAnimation();
-    }, []);
     const [start, setStart] = useState(false);
+    const [inView, setInView] = useState(false);
+    const didClone = React.useRef(false);
+
+    useEffect(() => {
+        const el = containerRef.current;
+        if (!el || prefersReducedMotion) return;
+        const io = new IntersectionObserver(([entry]) => {
+            setInView(entry.isIntersecting);
+        }, { threshold: 0.1 });
+        io.observe(el);
+        return () => io.disconnect();
+    }, [prefersReducedMotion]);
+
+    useEffect(() => {
+        if (prefersReducedMotion) return;
+        if (inView && !didClone.current) {
+            addAnimation();
+            didClone.current = true;
+            setStart(true);
+        } else if (!inView) {
+            setStart(false);
+        }
+    }, [inView, prefersReducedMotion]);
+
     function addAnimation() {
         if (containerRef.current && scrollerRef.current) {
             const scrollerContent = Array.from(scrollerRef.current.children);
@@ -63,6 +87,26 @@ export const InfiniteMovingCards = ({
             }
         }
     };
+    if (prefersReducedMotion) {
+        return (
+            <div className={cn("relative z-20 max-w-7xl", className)}>
+                <ul className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 py-4">
+                    {items.map((item, idx) => (
+                        <li className="w-full relative rounded-2xl border border-border p-6 bg-card" key={idx}>
+                            <blockquote>
+                                <span className="text-sm leading-[1.6] text-foreground font-normal">{item.quote}</span>
+                                <div className="mt-4 flex flex-col">
+                                    <span className="text-sm leading-[1.6] text-foreground font-semibold">{item.name}</span>
+                                    <span className="text-sm leading-[1.6] text-muted-foreground font-normal">{item.title}</span>
+                                </div>
+                            </blockquote>
+                        </li>
+                    ))}
+                </ul>
+            </div>
+        );
+    }
+
     return (
         <div ref={containerRef} className={cn("scroller relative z-20 max-w-7xl overflow-hidden [mask-image:linear-gradient(to_right,transparent,white_20%,white_80%,transparent)]", className)}>
             <ul ref={scrollerRef} className={cn("flex min-w-full shrink-0 gap-4 py-4 w-max flex-nowrap", start && "animate-scroll", pauseOnHover && "hover:[animation-play-state:paused]")}>

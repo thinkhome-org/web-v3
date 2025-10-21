@@ -2,6 +2,7 @@
 
 import { useRef } from "react";
 import { AnimatePresence, motion, MotionProps, useInView, UseInViewOptions, Variants } from "motion/react";
+import { usePrefersReducedMotion } from "@/lib/use-prefers-reduced-motion";
 
 type MarginType = UseInViewOptions["margin"];
 
@@ -22,6 +23,11 @@ interface BlurFadeProps extends MotionProps {
 }
 
 export function BlurFade({ children, className, variant, duration = 0.4, delay = 0, offset = 6, direction = "down", inView = true, inViewMargin = "-50px", blur = "6px", ...props }: BlurFadeProps) {
+    const prefersReducedMotion = usePrefersReducedMotion();
+    if (prefersReducedMotion) {
+        return <div className={className}>{children}</div>;
+    }
+
     const ref = useRef(null);
     // Replay animation whenever the element re-enters the viewport
     const inViewResult = useInView(ref, { once: false, margin: inViewMargin });

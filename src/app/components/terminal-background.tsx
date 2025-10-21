@@ -259,6 +259,7 @@ export default function TerminalBackground({ scale = 1, gridMul = [2, 1], digitS
     const rafRef = useRef<number>(0);
     const loadAnimationStartRef = useRef<number>(0);
     const timeOffsetRef = useRef<number>(Math.random() * 100);
+    const updateRef = useRef<(t: number) => void>(() => {});
 
     const tintVec = useMemo(() => hexToRgb(tint), [tint]);
 
@@ -287,7 +288,7 @@ export default function TerminalBackground({ scale = 1, gridMul = [2, 1], digitS
         const ctn = containerRef.current;
         if (!ctn) return;
 
-        const renderer = new Renderer({ dpr: resolvedDpr });
+        const renderer = new Renderer({ dpr: resolvedDpr, powerPreference: 'low-power' as any });
         rendererRef.current = renderer;
         const gl = renderer.gl;
         gl.clearColor(0, 0, 0, 1);
@@ -338,20 +339,18 @@ export default function TerminalBackground({ scale = 1, gridMul = [2, 1], digitS
         resizeObserver.observe(ctn);
         resize();
 
-        const update = (t: number) => {
-            rafRef.current = requestAnimationFrame(update);
+        updateRef.current = (t: number) => {
+            // schedule next frame
+            rafRef.current = requestAnimationFrame(updateRef.current);
 
             if (pageLoadAnimation && loadAnimationStartRef.current === 0) {
                 loadAnimationStartRef.current = t;
             }
 
-            if (!pause) {
-                const elapsed = (t * 0.001 + timeOffsetRef.current) * timeScale;
-                program.uniforms.iTime.value = elapsed;
-                frozenTimeRef.current = elapsed;
-            } else {
-                program.uniforms.iTime.value = frozenTimeRef.current;
-            }
+            // advance time
+            const elapsed = (t * 0.001 + timeOffsetRef.current) * timeScale;
+            program.uniforms.iTime.value = elapsed;
+            frozenTimeRef.current = elapsed;
 
             if (pageLoadAnimation && loadAnimationStartRef.current > 0) {
                 const animationDuration = 2000;
@@ -374,7 +373,7 @@ export default function TerminalBackground({ scale = 1, gridMul = [2, 1], digitS
 
             renderer.render({ scene: mesh });
         };
-        rafRef.current = requestAnimationFrame(update);
+        rafRef.current = requestAnimationFrame(updateRef.current);
         ctn.appendChild(gl.canvas);
 
         if (mouseReact) ctn.addEventListener("mousemove", handleMouseMove);
@@ -382,8 +381,9 @@ export default function TerminalBackground({ scale = 1, gridMul = [2, 1], digitS
         const onVisibility = () => {
             if (document.hidden) {
                 if (rafRef.current) cancelAnimationFrame(rafRef.current);
+                rafRef.current = 0 as unknown as number;
             } else {
-                rafRef.current = requestAnimationFrame(update);
+                if (!rafRef.current) rafRef.current = requestAnimationFrame(updateRef.current);
             }
         };
         document.addEventListener("visibilitychange", onVisibility);
@@ -398,7 +398,19 @@ export default function TerminalBackground({ scale = 1, gridMul = [2, 1], digitS
             timeOffsetRef.current = Math.random() * 100;
             document.removeEventListener("visibilitychange", onVisibility);
         };
-    }, [resolvedDpr, pause, timeScale, scale, gridMul, digitSize, scanlineIntensity, glitchAmount, flickerAmount, noiseAmp, chromaticAberration, ditherValue, curvature, tintVec, mouseReact, mouseStrength, pageLoadAnimation, brightness, handleMouseMove]);
+    }, [resolvedDpr, timeScale, scale, gridMul, digitSize, scanlineIntensity, glitchAmount, flickerAmount, noiseAmp, chromaticAberration, ditherValue, curvature, tintVec, mouseReact, mouseStrength, pageLoadAnimation, brightness, handleMouseMove]);
+
+    // Pause/resume without tearing down WebGL context
+    useEffect(() => {
+        const glReady = rendererRef.current && programRef.current;
+        if (!glReady) return;
+        if (pause) {
+            if (rafRef.current) cancelAnimationFrame(rafRef.current);
+            rafRef.current = 0 as unknown as number;
+        } else {
+            if (!rafRef.current) rafRef.current = requestAnimationFrame(updateRef.current);
+        }
+    }, [pause]);
 
     return <div ref={containerRef} className={`w-full h-full relative overflow-hidden ${className}`} style={style} {...rest} />;
 }

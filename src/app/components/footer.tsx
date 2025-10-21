@@ -6,7 +6,7 @@ import Contact from "@/app/components/contact";
 
 export default function Footer() {
     return (
-        <footer className="bg-neutral-900 text-white py-8 border-t border-neutral-600">
+        <footer className="bg-neutral-900 text-white py-8 border-t border-neutral-600" style={{ contentVisibility: "auto", containIntrinsicSize: "500px 800px" }}>
             <div className="container mx-auto px-4 flex flex-col gap-4">
                 <div className="relative">
                     <div className="flex justify-center">
