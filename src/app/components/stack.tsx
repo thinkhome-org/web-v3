@@ -62,14 +62,12 @@ const ScrollStack: React.FC<ScrollStackProps> = ({ children, className = "", ite
             return {
                 scrollTop: window.scrollY,
                 containerHeight: window.innerHeight,
-                scrollContainer: document.documentElement,
             };
         } else {
             const scroller = scrollerRef.current;
             return {
                 scrollTop: scroller ? scroller.scrollTop : 0,
                 containerHeight: scroller ? scroller.clientHeight : 0,
-                scrollContainer: scroller,
             };
         }
     }, [useWindowScroll]);
@@ -91,7 +89,7 @@ const ScrollStack: React.FC<ScrollStackProps> = ({ children, className = "", ite
 
         isUpdatingRef.current = true;
 
-        const { scrollTop, containerHeight, scrollContainer } = getScrollData();
+        const { scrollTop, containerHeight } = getScrollData();
         const stackPositionPx = parsePercentage(stackPosition, containerHeight);
         const scaleEndPositionPx = parsePercentage(scaleEndPosition, containerHeight);
 

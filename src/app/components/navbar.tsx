@@ -53,7 +53,7 @@ export default function Navbar({ className }: NavbarProps) {
                     <PillTabs
                         items={links}
                         activeIndex={activeIndex}
-                        renderItem={({ item, index, ref, onMouseEnter, onFocus, isActive, className }) => (
+                        renderItem={({ item, ref, onMouseEnter, onFocus, isActive, className }) => (
                             <Link
                                 key={item.href}
                                 href={item.href}
@@ -69,7 +69,7 @@ export default function Navbar({ className }: NavbarProps) {
                 </nav>
 
                 <div className="flex items-center justify-end">
-                    <Link href="/contact" className="group hidden md:inline-flex items-center rounded-full border p-1 shadow-lg backdrop-blur transition-colors supports-[backdrop-filter]:bg-background/30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50">
+                    <Link href="/#contact" className="group hidden md:inline-flex items-center rounded-full border p-1 shadow-lg backdrop-blur transition-colors supports-[backdrop-filter]:bg-background/30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50">
                         <span className="rounded-full px-3 py-1.5 text-sm text-muted-foreground transition-[background-color,color] duration-300 group-hover:bg-foreground/10 group-hover:text-foreground">Kontakt</span>
                     </Link>
                     <div className="md:hidden">
