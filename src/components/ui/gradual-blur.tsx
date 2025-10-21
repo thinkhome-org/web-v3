@@ -15,11 +15,12 @@ interface GradualBlurProps {
     curve?: Curve;
     exponential?: boolean;
     opacity?: number;
+    sticky?: boolean;
     className?: string;
     children?: React.ReactNode;
 }
 
-const GradualBlur: React.FC<GradualBlurProps> = ({ target = "parent", position = "bottom", height = "4rem", width = "100%", strength = 1, divCount = 5, curve = "ease-out", exponential = false, opacity = 1, className = "", children }) => {
+const GradualBlur: React.FC<GradualBlurProps> = ({ target = "parent", position = "bottom", height = "4rem", width = "100%", strength = 1.5, divCount = 1, curve = "ease-out", exponential = false, opacity = 1, sticky = false, className = "", children }) => {
     const isVertical = position === "top" || position === "bottom";
     const dimension = isVertical ? height : width;
 
@@ -43,12 +44,55 @@ const GradualBlur: React.FC<GradualBlurProps> = ({ target = "parent", position =
     const curveFunction = getCurveFunction(curve);
 
     const generateBlurLayers = () => {
-        const layers = [];
+        const layers = [] as React.ReactNode[]
+
+        // Single high-quality layer with gradient mask for performance
+        if (divCount <= 1) {
+            const blurPx = strength * 12
+            const maskDir = isVertical
+                ? position === "top"
+                    ? "to bottom"
+                    : "to top"
+                : position === "left"
+                    ? "to right"
+                    : "to left"
+
+            const layerStyle: CSSProperties = {
+                position: sticky && position === "top" ? "sticky" : "absolute",
+                pointerEvents: "none",
+                backdropFilter: `blur(${blurPx}px)`,
+                WebkitBackdropFilter: `blur(${blurPx}px)`,
+                opacity,
+                maskImage: `linear-gradient(${maskDir}, rgba(0,0,0,1), rgba(0,0,0,0))`,
+                WebkitMaskImage: `linear-gradient(${maskDir}, rgba(0,0,0,1), rgba(0,0,0,0))`,
+                zIndex: 2,
+            }
+
+            if (isVertical) {
+                layerStyle.width = "100%"
+                layerStyle.height = dimension
+                if (position === "bottom") layerStyle.bottom = 0
+                if (position === "top") layerStyle.top = 0
+            } else {
+                layerStyle.height = "100%"
+                layerStyle.width = dimension
+                if (position === "right") layerStyle.right = 0
+                if (position === "left") layerStyle.left = 0
+            }
+
+            // sticky only makes sense for top; browsers have limited bottom-sticky support
+            if (sticky && position === "top") layerStyle.top = 0
+
+            layers.push(<div key="blur-mask" style={layerStyle} className="gradual-blur-layer" />)
+            return layers
+        }
+
+        // Multi-layer fallback (legacy)
         for (let i = 0; i < divCount; i++) {
-            const progress = (i + 1) / divCount;
-            const curvedProgress = exponential ? Math.pow(curveFunction(progress), 2) : curveFunction(progress);
-            const blurValue = curvedProgress * strength * 10;
-            const opacityValue = curvedProgress * opacity;
+            const progress = (i + 1) / divCount
+            const curvedProgress = exponential ? Math.pow(curveFunction(progress), 2) : curveFunction(progress)
+            const blurValue = curvedProgress * strength * 10
+            const opacityValue = curvedProgress * opacity
 
             const layerStyle: CSSProperties = {
                 position: "absolute",
@@ -57,37 +101,37 @@ const GradualBlur: React.FC<GradualBlurProps> = ({ target = "parent", position =
                 WebkitBackdropFilter: `blur(${blurValue}px)`,
                 opacity: opacityValue,
                 zIndex: divCount - i,
-            };
+            }
 
             if (isVertical) {
-                layerStyle.width = "100%";
-                layerStyle.height = `calc(${dimension} / ${divCount})`;
+                layerStyle.width = "100%"
+                layerStyle.height = `calc(${dimension} / ${divCount})`
                 if (position === "bottom") {
-                    layerStyle.bottom = `calc(${dimension} / ${divCount} * ${divCount - i - 1})`;
+                    layerStyle.bottom = `calc(${dimension} / ${divCount} * ${divCount - i - 1})`
                 } else {
-                    layerStyle.top = `calc(${dimension} / ${divCount} * ${divCount - i - 1})`;
+                    layerStyle.top = `calc(${dimension} / ${divCount} * ${divCount - i - 1})`
                 }
             } else {
-                layerStyle.height = "100%";
-                layerStyle.width = `calc(${dimension} / ${divCount})`;
+                layerStyle.height = "100%"
+                layerStyle.width = `calc(${dimension} / ${divCount})`
                 if (position === "right") {
-                    layerStyle.right = `calc(${dimension} / ${divCount} * ${divCount - i - 1})`;
+                    layerStyle.right = `calc(${dimension} / ${divCount} * ${divCount - i - 1})`
                 } else {
-                    layerStyle.left = `calc(${dimension} / ${divCount} * ${divCount - i - 1})`;
+                    layerStyle.left = `calc(${dimension} / ${divCount} * ${divCount - i - 1})`
                 }
             }
 
-            layers.push(<div key={i} style={layerStyle} className="gradual-blur-layer" />);
+            layers.push(<div key={i} style={layerStyle} className="gradual-blur-layer" />)
         }
-        return layers;
-    };
+        return layers
+    }
 
     if (target === "parent") {
         return (
             <div
                 className={`gradual-blur-container ${className}`}
                 style={{
-                    position: "absolute",
+                    position: sticky && position === "top" ? "sticky" : "absolute",
                     pointerEvents: "none",
                     ...(position === "top" && { top: 0 }),
                     ...(position === "bottom" && { bottom: 0 }),
@@ -95,6 +139,7 @@ const GradualBlur: React.FC<GradualBlurProps> = ({ target = "parent", position =
                     ...(position === "right" && { right: 0 }),
                     ...(isVertical && { width: "100%", height: dimension }),
                     ...(!isVertical && { height: "100%", width: dimension }),
+                    zIndex: 1,
                 }}
             >
                 {generateBlurLayers()}
@@ -108,7 +153,7 @@ const GradualBlur: React.FC<GradualBlurProps> = ({ target = "parent", position =
             <div
                 className="gradual-blur-container"
                 style={{
-                    position: "absolute",
+                    position: sticky && position === "top" ? "sticky" : "absolute",
                     pointerEvents: "none",
                     ...(position === "top" && { top: 0 }),
                     ...(position === "bottom" && { bottom: 0 }),
@@ -116,6 +161,7 @@ const GradualBlur: React.FC<GradualBlurProps> = ({ target = "parent", position =
                     ...(position === "right" && { right: 0 }),
                     ...(isVertical && { width: "100%", height: dimension }),
                     ...(!isVertical && { height: "100%", width: dimension }),
+                    zIndex: 1,
                 }}
             >
                 {generateBlurLayers()}

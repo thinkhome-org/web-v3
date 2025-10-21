@@ -3,9 +3,10 @@
  * - Services grid, testimonials carousel, and contact block.
  * - Keeps copy in Czech; adjust content only, not structure.
  */
-import { InfiniteMovingCards } from "@/components/ui/infinite-moving-cards";
-import { BlurFade } from "@/components/ui/blur-fade";
-import { CardBody, CardContainer, CardItem } from "@/components/ui/3d-card";
+import { InfiniteMovingCards } from "@/components/ui/infinite-moving-cards"
+import { BlurFade } from "@/components/ui/blur-fade"
+import { CardBody, CardContainer, CardItem } from "@/components/ui/3d-card"
+import GradualBlur from "@/components/ui/gradual-blur"
 
 export default function About() {
     const testimonials = [
@@ -28,6 +29,8 @@ export default function About() {
 
     return (
         <div className="space-y-24 pb-16">
+            {/* Sticky top blur inside the section for a soft edge while scrolling */}
+            <GradualBlur position="top" target="parent" height="4rem" sticky strength={1.2} />
             {/* Services Section */}
             <div id="services" className="max-w-6xl mx-auto px-8 space-y-8 scroll-mt-24">
                 <div className="text-center space-y-4">
