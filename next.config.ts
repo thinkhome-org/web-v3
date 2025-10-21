@@ -13,7 +13,7 @@ const nextConfig: NextConfig = {
   experimental: {
     // Helps tree-shake large packages (icons/animation libs)
     // See: Next.js docs on `optimizePackageImports`
-    optimizePackageImports: ["lucide-react", "gsap", "motion"],
+    optimizePackageImports: ["lucide-react"],
   },
 };
 

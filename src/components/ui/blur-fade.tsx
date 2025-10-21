@@ -1,22 +1,21 @@
 "use client";
 
-import { useRef } from "react";
-import { AnimatePresence, motion, MotionProps, useInView, UseInViewOptions, Variants } from "motion/react";
+import React, { CSSProperties, useEffect, useMemo, useRef, useState } from "react";
 import { usePrefersReducedMotion } from "@/lib/use-prefers-reduced-motion";
 
-type MarginType = UseInViewOptions["margin"];
+type MarginType = string | undefined;
 
-interface BlurFadeProps extends MotionProps {
+type Direction = "up" | "down" | "left" | "right";
+
+interface BlurFadeProps {
     children: React.ReactNode;
     className?: string;
-    variant?: {
-        hidden: { y: number };
-        visible: { y: number };
-    };
+    // kept for API compatibility (ignored)
+    variant?: unknown;
     duration?: number;
     delay?: number;
     offset?: number;
-    direction?: "up" | "down" | "left" | "right";
+    direction?: Direction;
     inView?: boolean;
     inViewMargin?: MarginType;
     blur?: string;
@@ -28,41 +27,40 @@ export function BlurFade({ children, className, variant, duration = 0.4, delay =
         return <div className={className}>{children}</div>;
     }
 
-    const ref = useRef(null);
-    // Replay animation whenever the element re-enters the viewport
-    const inViewResult = useInView(ref, { once: false, margin: inViewMargin });
-    const isInView = !inView || inViewResult;
-    const defaultVariants: Variants = {
-        hidden: {
-            [direction === "left" || direction === "right" ? "x" : "y"]: direction === "right" || direction === "down" ? -offset : offset,
-            opacity: 0,
-            filter: `blur(${blur})`,
-        },
-        visible: {
-            [direction === "left" || direction === "right" ? "x" : "y"]: 0,
-            opacity: 1,
-            filter: `blur(0px)`,
-        },
-    };
-    const combinedVariants = variant || defaultVariants;
+    const ref = useRef<HTMLDivElement | null>(null);
+    const [visible, setVisible] = useState(!inView);
+
+    useEffect(() => {
+        if (!inView) return;
+        const el = ref.current;
+        if (!el) return;
+        const io = new IntersectionObserver(
+            ([entry]) => setVisible(entry.isIntersecting),
+            { root: null, rootMargin: inViewMargin, threshold: [0, 0.01, 1] },
+        );
+        io.observe(el);
+        return () => io.disconnect();
+    }, [inView, inViewMargin]);
+
+    const axis = direction === "left" || direction === "right" ? "X" : "Y";
+    const sign = direction === "right" || direction === "down" ? -1 : 1;
+
+    const style: CSSProperties = useMemo(() => {
+        return {
+            transitionProperty: "transform, opacity, filter",
+            transitionTimingFunction: "cubic-bezier(0.2, 0.8, 0.2, 1)",
+            transitionDuration: `${duration}s`,
+            transitionDelay: `${Math.max(0, delay)}s`,
+            transform: visible ? `translate${axis}(0px)` : `translate${axis}(${sign * offset}px)`,
+            opacity: visible ? 1 : 0,
+            filter: visible ? "blur(0px)" : `blur(${blur})`,
+            willChange: "transform, opacity, filter",
+        };
+    }, [axis, sign, visible, duration, delay, offset, blur]);
+
     return (
-        <AnimatePresence>
-            <motion.div
-                ref={ref}
-                initial="hidden"
-                animate={isInView ? "visible" : "hidden"}
-                exit="hidden"
-                variants={combinedVariants}
-                transition={{
-                    delay: 0.04 + delay,
-                    duration,
-                    ease: "easeOut",
-                }}
-                className={className}
-                {...props}
-            >
-                {children}
-            </motion.div>
-        </AnimatePresence>
+        <div ref={ref} className={className} style={style}>
+            {children}
+        </div>
     );
 }
