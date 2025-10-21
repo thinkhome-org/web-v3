@@ -1,6 +1,4 @@
-import type { SpringOptions } from 'motion/react';
 import { useRef, useState } from 'react';
-import { motion, useMotionValue, useSpring } from 'motion/react';
 
 interface TiltedCardProps {
   imageSrc: React.ComponentProps<'img'>['src'];
@@ -18,11 +16,7 @@ interface TiltedCardProps {
   displayOverlayContent?: boolean;
 }
 
-const springValues: SpringOptions = {
-  damping: 30,
-  stiffness: 100,
-  mass: 2
-};
+const springValues = { damping: 30, stiffness: 100, mass: 2 };
 
 export default function TiltedCard({
   imageSrc,
@@ -40,17 +34,10 @@ export default function TiltedCard({
   displayOverlayContent = false
 }: TiltedCardProps) {
   const ref = useRef<HTMLElement>(null);
-  const x = useMotionValue(0);
-  const y = useMotionValue(0);
-  const rotateX = useSpring(useMotionValue(0), springValues);
-  const rotateY = useSpring(useMotionValue(0), springValues);
-  const scale = useSpring(1, springValues);
-  const opacity = useSpring(0);
-  const rotateFigcaption = useSpring(0, {
-    stiffness: 350,
-    damping: 30,
-    mass: 1
-  });
+  const cardRef = useRef<HTMLDivElement>(null);
+  const tooltipRef = useRef<HTMLElement>(null);
+  const scaleRef = useRef<number>(1);
+  const stateRef = useRef({ rotateX: 0, rotateY: 0, opacity: 0, x: 0, y: 0, rotateCap: 0 });
 
   const [lastY, setLastY] = useState(0);
 
@@ -64,28 +51,41 @@ export default function TiltedCard({
     const rotationX = (offsetY / (rect.height / 2)) * -rotateAmplitude;
     const rotationY = (offsetX / (rect.width / 2)) * rotateAmplitude;
 
-    rotateX.set(rotationX);
-    rotateY.set(rotationY);
+    stateRef.current.rotateX = rotationX;
+    stateRef.current.rotateY = rotationY;
 
-    x.set(e.clientX - rect.left);
-    y.set(e.clientY - rect.top);
+    stateRef.current.x = e.clientX - rect.left;
+    stateRef.current.y = e.clientY - rect.top;
 
     const velocityY = offsetY - lastY;
-    rotateFigcaption.set(-velocityY * 0.6);
+    stateRef.current.rotateCap = -velocityY * 0.6;
     setLastY(offsetY);
+
+    if (cardRef.current) {
+      cardRef.current.style.transform = `rotateX(${stateRef.current.rotateX}deg) rotateY(${stateRef.current.rotateY}deg) scale(${scaleRef.current})`;
+    }
+    if (tooltipRef.current) {
+      tooltipRef.current.style.transform = `translate(${stateRef.current.x}px, ${stateRef.current.y}px) rotate(${stateRef.current.rotateCap}deg)`;
+    }
   }
 
   function handleMouseEnter() {
-    scale.set(scaleOnHover);
-    opacity.set(1);
+    scaleRef.current = scaleOnHover;
+    if (cardRef.current) {
+      cardRef.current.style.transform = `rotateX(${stateRef.current.rotateX}deg) rotateY(${stateRef.current.rotateY}deg) scale(${scaleRef.current})`;
+    }
+    if (tooltipRef.current) tooltipRef.current.style.opacity = '1';
   }
 
   function handleMouseLeave() {
-    opacity.set(0);
-    scale.set(1);
-    rotateX.set(0);
-    rotateY.set(0);
-    rotateFigcaption.set(0);
+    if (tooltipRef.current) tooltipRef.current.style.opacity = '0';
+    scaleRef.current = 1;
+    stateRef.current.rotateX = 0;
+    stateRef.current.rotateY = 0;
+    stateRef.current.rotateCap = 0;
+    if (cardRef.current) {
+      cardRef.current.style.transform = `rotateX(0deg) rotateY(0deg) scale(1)`;
+    }
   }
 
   return (
@@ -106,20 +106,19 @@ export default function TiltedCard({
         </div>
       )}
 
-      <motion.div
-        className="relative [transform-style:preserve-3d]"
+      <div
+        ref={cardRef}
+        className="relative [transform-style:preserve-3d] will-change-transform"
         style={{
           width: imageWidth,
           height: imageHeight,
-          rotateX,
-          rotateY,
-          scale
+          transform: 'rotateX(0deg) rotateY(0deg) scale(1)'
         }}
       >
-        <motion.img
+        <img
           src={imageSrc}
           alt={altText}
-          className="absolute top-0 left-0 object-cover rounded-[15px] will-change-transform [transform:translateZ(0)]"
+          className="absolute top-0 left-0 object-cover rounded-[15px] [transform:translateZ(0)] will-change-transform"
           style={{
             width: imageWidth,
             height: imageHeight
@@ -127,24 +126,23 @@ export default function TiltedCard({
         />
 
         {displayOverlayContent && overlayContent && (
-          <motion.div className="absolute top-0 left-0 z-[2] will-change-transform [transform:translateZ(30px)]">
+          <div className="absolute top-0 left-0 z-[2] will-change-transform [transform:translateZ(30px)]">
             {overlayContent}
-          </motion.div>
+          </div>
         )}
-      </motion.div>
+      </div>
 
       {showTooltip && (
-        <motion.figcaption
-          className="pointer-events-none absolute left-0 top-0 rounded-[4px] bg-white px-[10px] py-[4px] text-[10px] text-[#2d2d2d] opacity-0 z-[3] hidden sm:block"
+        <figcaption
+          ref={tooltipRef as any}
+          className="pointer-events-none absolute left-0 top-0 rounded-[4px] bg-white px-[10px] py-[4px] text-[10px] text-[#2d2d2d] opacity-0 z-[3] hidden sm:block will-change-transform"
           style={{
-            x,
-            y,
-            opacity,
-            rotate: rotateFigcaption
+            opacity: 0,
+            transform: 'translate(0px, 0px) rotate(0deg)'
           }}
         >
           {captionText}
-        </motion.figcaption>
+        </figcaption>
       )}
     </figure>
   );
