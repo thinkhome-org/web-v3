@@ -31,8 +31,6 @@ export default function Home() {
           className="relative bg-background rounded-t-[3rem] pt-20 pb-20 shadow-2xl min-h-screen pointer-events-auto"
           data-testid="about-section"
         >
-          {/* Top edge blur that sticks under the header while scrolling */}
-          <GradualBlur position="top" target="parent" height="6rem" sticky strength={1.5} />
           <About />
         </div>
         <Footer />
